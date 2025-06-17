@@ -1,0 +1,7 @@
+_target_: src.models.rmsn.RMSN
+input_dim: ???
+hidden_dim: 256
+num_layers: 3
+dropout: 0.15
+use_ipcw: false
+use_cdc: true

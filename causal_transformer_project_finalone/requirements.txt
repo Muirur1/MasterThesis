@@ -1,0 +1,15 @@
+Python version: 3.12.9
+Anaconda Navigator version: 2.6.6
+pandas==2.2.3
+numpy==1.26.4
+matplotlib==3.7.5
+seaborn==0.13.2
+statsmodels==0.14.2
+scikit-learn==1.4.2
+missingno==0.5.2
+scipy==1.11.4
+torch==2.6.0+cpu
+tqdm==4.67.1
+hydra-core==1.3.2
+omegaconf==2.3.0
+optuna==2.10.1

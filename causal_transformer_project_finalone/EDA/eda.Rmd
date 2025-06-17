@@ -1,0 +1,90 @@
+```{r}
+
+pacman::p_load(here, data.table, tidyverse, lubridate, readxl, xlsx, stringr, tidyr)
+here()
+
+```
+
+```{r}
+real_data = fread(here("Year2/Sem2/Master Thesis/causal_transformer_project/data/real_data.csv"))|>
+    select(!c("complaints_cough_grt14days_fu90", "complaints_diarrhoea_over14days_adm",
+    "complaints_diarrhoea_greater_ equal14 days_fu180", "complaints_cough_greater_equal14days_fu180"))|>
+    mutate(country = case_when(site %in% c("Kilifi", "Nairobi", "Migori")~"Kenya",
+                              site %in% c("Dhaka", "Matlab") ~ "Bangladesh",
+                              site == "Karachi" ~ "Pakistan",
+                              site == "Kampala" ~ "Uganda",
+                              site == "Banfora" ~ "Burkina Faso",
+                              site == "Blantyre" ~ "Malawi"),
+            region = case_when(country %in% c("Kenya", "Uganda", "Malawi") ~ "Eastern Africa",
+                               country %in% c("Bangladesh", "Pakistan") ~ "South East Asia",
+                               country == "Burkina Faso" ~ "West Africa"),
+            fu45_height = round(fu45_height1 + fu45_height2 / 2, 2),
+            fu90_height = round(fu90_height1 + fu90_height2 / 2, 2),
+            fu180_height = round(fu180_height1 + fu180_height2 / 2, 2),
+            fu45_muac = round(fu45_muac1 + fu45_muac2 / 2, 2),
+            fu90_muac = round(fu90_muac1 + fu90_muac2 / 2, 2),
+            fu180_muac = round(fu180_muac1 + fu180_muac2 / 2, 2),
+            complaints_cough_adm = NA_character_,
+            hfoodshort_last_wk_adm = NA_character_,
+            part_appmnts_nutrition_followup_adm = NA_character_)|>
+    dplyr::select(1:6, 64, 65, 16, 17, 7:13, 72, 14,15,74,18,73, 19, 66, 69, 24:34, 67, 70, 39:49, 68, 71, 54: 63)|>
+    dplyr::filter(adm_dead==0)|>
+    data.table::setnames(c("record_id", "group_adm", "adm_dead", "sex", "agemons",
+                           "site", "country", "region", "nutri_prog_disch", "nutri_counsel_disch",
+                           "weight_adm", "height_adm", "muac_adm", "oedema_adm",
+                           "complaints_vomiting_adm", "complaints_fever_adm", "complaints_diarrhoea_adm",
+                           "complaints_cough_adm", "complaints_notfeeding_adm", "complaints_poorfeeding_adm",
+                           "part_appmnts_nutrition_followup_adm", "outpatfeed_prog_adm", "hfoodshort_last_wk_adm",
+                           "weight_fu45", "height_fu45", "muac_fu45", "oedema_fu45",
+                           "complaints_vomiting_fu45", "complaints_fever_fu45", "complaints_diarrhoea_fu45",
+                           "complaints_cough_fu45", "complaints_notfeeding_fu45", "complaints_poorfeeding_fu45",
+                           "part_appmnts_nutrition_followup_fu45", "outpatfeed_prog_fu45", "hfoodshort_last_wk_fu45",
+                           "weight_fu90", "height_fu90", "muac_fu90", "oedema_fu90",
+                           "complaints_vomiting_fu90", "complaints_fever_fu90", "complaints_diarrhoea_fu90",
+                           "complaints_cough_fu90", "complaints_notfeeding_fu90", "complaints_poorfeeding_fu90",
+                           "part_appmnts_nutrition_followup_fu90", "outpatfeed_prog_fu90", "hfoodshort_last_wk_fu90",
+                           "weight_fu180", "height_fu180", "muac_fu180", "oedema_fu180",
+                           "complaints_vomiting_fu180", "complaints_fever_fu180", "complaints_diarrhoea_fu180",
+                           "complaints_cough_fu180", "complaints_notfeeding_fu180", "complaints_poorfeeding_fu180",
+                           "part_appmnts_nutrition_followup_fu180", "outpatfeed_prog_fu180", "hfoodshort_last_wk_fu180"))
+View(real_data)
+dim(real_data)
+```
+
+```{r}
+names(real_data)
+```
+
+```{r}
+setDT(real_data)
+
+# Identify common (time-invariant) variables
+id_vars <- c("record_id", "group_adm", "adm_dead", "sex", "agemons",
+             "site", "country", "region", "nutri_prog_disch", "nutri_counsel_disch")
+
+# Use melt with patterns for wide-to-long reshaping
+long_data <- melt(
+  real_data,
+  id.vars = id_vars,
+  measure.vars = patterns(
+    weight   = "^weight_",
+    height   = "^height_",
+    muac     = "^muac_",
+    oedema   = "^oedema_",
+    complaints_vomiting = "^complaints_vomiting_",
+    complaints_fever    = "^complaints_fever_",
+    complaints_diarrhoea = "^complaints_diarrhoea_",
+    complaints_cough     = "^complaints_cough_",
+    complaints_notfeeding = "^complaints_notfeeding_",
+    complaints_poorfeeding = "^complaints_poorfeeding_",
+    part_appmnts_nutrition_followup = "^part_appmnts_nutrition_followup_",
+    outpatfeed_prog = "^outpatfeed_prog_",
+    hfoodshort_last_wk = "^hfoodshort_last_wk_"
+  ),
+  variable.name = "timepoint"
+)
+```
+
+```{r}
+View(long_data)
+```

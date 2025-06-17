@@ -1,0 +1,7 @@
+_target_: src.models.causal_transformer.CausalTransformer
+embed_dim: 128
+num_layers: 5
+n_heads: 8
+dropout: 0.12112631829351567
+use_ipcw: true
+use_cdc: true

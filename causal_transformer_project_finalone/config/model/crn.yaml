@@ -1,0 +1,7 @@
+_target_: src.models.crn.CRN
+input_dim: ???
+hidden_dim: 64
+num_layers: 3
+dropout: 0.249
+use_ipcw: false
+use_cdc: true  # always with CDC

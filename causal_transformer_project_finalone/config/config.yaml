@@ -1,0 +1,10 @@
+defaults:
+  - model: transformer # Default
+  - optimizer: adam
+  - trainer: default
+  - _self_
+
+seed: 42
+batch_size: 128
+epochs: 30
+device: cpu  # or cuda if available
